@@ -9,6 +9,7 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 1280,
+    alwaysOnTop: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,

@@ -132,3 +132,6 @@ dist
 src/configs/firebase.config.ts
 node_modules/
 
+release/win-unpacked/FaceFilter.exe
+release/win-unpacked/icudtl.dat
+release/win-unpacked/resources/app.asar
