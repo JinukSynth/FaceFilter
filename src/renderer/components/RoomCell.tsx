@@ -2,7 +2,7 @@ import React from "react";
 import { CellProps, StatusType } from "../../types/components";
 import MemoInput from "../ui/MemoInput";
 import StatusButtons, { STATUS_OPTIONS } from "../ui/StatesButtons";
-import CountdownInput from "../ui/CountInput";
+import CountdownInput from "../ui/CountdownInput";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/Dialog";
 import { useTimer } from "../hooks/useTimer";
 import { useFirebaseCell } from "../hooks/useFirebase";
@@ -41,19 +41,13 @@ export default function RoomCell({ row, col, data, roomName, onUpdate, onReset }
 
   const handleReset = async () => {
     try {
-      const willReset = await window.electron.showConfirmDialog();
+      closeModal();
+      resetModalState();
       
-      if (willReset) {
-        // 실제 초기화 진행
-        await resetCell();
-        closeModal();
-        resetModalState();
-        
-        window.electron.ipcRenderer.send('minimize-and-restore');
-      } else {
-        closeModal();
-      }
+      // 실제 초기화 진행
+      await resetCell();
     } catch (error) {
+      console.error("Reset error:", error);
       await window.electron.showErrorDialog("셀 초기화에 실패했습니다.");
     }
   };
@@ -115,6 +109,7 @@ export default function RoomCell({ row, col, data, roomName, onUpdate, onReset }
             <StatusButtons 
               selectedStatus={modalState.status} 
               onSelect={handleStatusChange}
+              error={modalState.errors?.status}
             />
             
             {modalState.status &&
@@ -125,6 +120,7 @@ export default function RoomCell({ row, col, data, roomName, onUpdate, onReset }
                   onChangeMinutes={handleCountdownMinutesChange}
                   onChangeSeconds={handleCountdownSecondsChange}
                   currentTimer={currentTimer}
+                  error={modalState.errors?.countdown}
                 />
               )}
           </div>

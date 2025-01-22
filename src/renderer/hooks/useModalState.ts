@@ -64,10 +64,7 @@ export function useModalState({ cellData, onSubmit }: UseModalStateProps) {
 
    if (!modalState.status) {
      errors.status = "상태를 선택해주세요";
-   }
-
-   if (modalState.status && 
-       STATUS_OPTIONS[modalState.status].countType === "countdown") {
+   } else if (STATUS_OPTIONS[modalState.status].countType === "countdown") {
      const minutes = safeParseInt(modalState.countdownMinutes);
      const seconds = safeParseInt(modalState.countdownSeconds);
      
@@ -90,7 +87,8 @@ const openModal = () => {
         memo: cellData?.memo || "",
         status: cellData?.status || null,
         countdownMinutes: cellData?.countdownMinutes || "",
-        countdownSeconds: cellData?.countdownSeconds || "0"
+        countdownSeconds: cellData?.countdownSeconds || "0",
+        errors: {}
       });
       resolve();
     });
@@ -110,7 +108,8 @@ const openModal = () => {
      memo: "",
      status: null,
      countdownMinutes: "",
-     countdownSeconds: "0"
+     countdownSeconds: "0",
+     errors: {}
    });
  };
 

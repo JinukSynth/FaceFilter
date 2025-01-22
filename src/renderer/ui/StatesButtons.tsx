@@ -9,35 +9,36 @@ export const STATUS_OPTIONS: Record<StatusType, StatusOption> = {
   "대기중": { color: "#87CEEB", countType: "countup" },         // 하늘색 (스카이블루)
 } as const;
 
-type StatusButtonsProps = {
+interface StatusButtonsProps {
   selectedStatus: StatusType | null;
   onSelect: (status: StatusType) => void;
-  className?: string;
-};
+  error?: string;  // 에러 메시지 추가
+}
 
-export default function StatusButtons({
-  selectedStatus,
-  onSelect,
-  className
-}: StatusButtonsProps) {
+const StatusButtons = ({ selectedStatus, onSelect, error }: StatusButtonsProps) => {
   return (
-    <div className={`grid grid-cols-2 gap-3 ${className}`}>
-      {Object.entries(STATUS_OPTIONS).map(([status, { color }]) => (
-        <button
-          key={status}
-          className={`w-full py-2.5 text-black rounded-md shadow-sm
-                     transition-colors duration-200
-                     ${selectedStatus === status 
-                       ? 'ring-2 ring-offset-1'
-                       : 'hover:opacity-90'}`}
-          style={{
-            backgroundColor: color
-          }}
-          onClick={() => onSelect(status as StatusType)}
-        >
-          {status}
-        </button>
-      ))}
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        {Object.entries(STATUS_OPTIONS).map(([status, option]) => (
+          <button
+            key={status}
+            onClick={() => onSelect(status as StatusType)}
+            className={`px-4 py-2 rounded-md ${
+              selectedStatus === status
+                ? 'ring-2 ring-offset-2 ring-[#007ACC]'
+                : error  // 에러가 있을 때 빨간 테두리 추가
+                ? 'border-red-500'
+                : 'border-gray-200'
+            }`}
+            style={{ backgroundColor: option.color }}
+          >
+            {status}
+          </button>
+        ))}
+      </div>
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
-}
+};
+
+export default StatusButtons;
