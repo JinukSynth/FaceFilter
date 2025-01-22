@@ -41,7 +41,7 @@ export default function RoomCell({ row, col, data, roomName, onUpdate, onReset }
 
   const handleReset = async () => {
     try {
-      const willReset = window.confirm("이 셀을 초기화하시겠습니까?");
+      const willReset = await window.electron.showConfirmDialog();
       
       if (willReset) {
         // 실제 초기화 진행
@@ -49,14 +49,12 @@ export default function RoomCell({ row, col, data, roomName, onUpdate, onReset }
         closeModal();
         resetModalState();
         
-        // 창 최소화 후 복원을 위한 IPC 호출 추가
         window.electron.ipcRenderer.send('minimize-and-restore');
       } else {
-        // 취소 시에는 그냥 모달만 닫기 
         closeModal();
       }
     } catch (error) {
-      alert("셀 초기화에 실패했습니다.");
+      await window.electron.showErrorDialog("셀 초기화에 실패했습니다.");
     }
   };
 

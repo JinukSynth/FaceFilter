@@ -9,7 +9,11 @@ interface ModalState {
  status: StatusType | null;
  countdownMinutes: string;
  countdownSeconds: string;
- 
+ errors: {
+   patientName?: string;
+   status?: string;
+   countdown?: string;
+ };
 }
 
 interface UseModalStateProps {
@@ -24,7 +28,8 @@ export function useModalState({ cellData, onSubmit }: UseModalStateProps) {
     memo: "",
     status: null,
     countdownMinutes: "",
-    countdownSeconds: "0"
+    countdownSeconds: "0",
+    errors: {}
   };
 
  const [modalState, setModalState] = useState<ModalState>(initialState);
@@ -50,25 +55,29 @@ export function useModalState({ cellData, onSubmit }: UseModalStateProps) {
    return isNaN(parsed) ? 0 : Math.max(0, parsed);
  };
 
- const validateForm = (): string | null => {
+ const validateForm = (): boolean => {
+   const errors: ModalState['errors'] = {};
+   
    if (!modalState.patientName.trim()) {
-     return "환자 이름을 입력해주세요";
+     errors.patientName = "환자 이름을 입력해주세요";
    }
 
    if (!modalState.status) {
-     return "상태를 선택해주세요";
+     errors.status = "상태를 선택해주세요";
    }
 
-   if (STATUS_OPTIONS[modalState.status].countType === "countdown") {
+   if (modalState.status && 
+       STATUS_OPTIONS[modalState.status].countType === "countdown") {
      const minutes = safeParseInt(modalState.countdownMinutes);
      const seconds = safeParseInt(modalState.countdownSeconds);
      
      if (minutes === 0 && seconds === 0) {
-       return "시간을 입력해주세요";
+       errors.countdown = "시간을 입력해주세요";
      }
    }
 
-   return null;
+   setModalState(prev => ({ ...prev, errors }));
+   return Object.keys(errors).length === 0;
  };
 
   // openModal 함수 수정
@@ -147,48 +156,43 @@ const openModal = () => {
  };
 
  const handleSubmit = () => {
-   const validationError = validateForm();
-   
-   if (validationError) {
-     alert(validationError);
-     return;
-   }
-
-   const currentTime = Math.floor(Date.now() / 1000);
-   
-   if (modalState.status && STATUS_OPTIONS[modalState.status]) {
-     const { countType } = STATUS_OPTIONS[modalState.status];
+   if (validateForm()) {
+     const currentTime = Math.floor(Date.now() / 1000);
      
-     let submitData;
-     
-     if (countType === "countdown") {
-       const minutes = safeParseInt(modalState.countdownMinutes);
-       const seconds = safeParseInt(modalState.countdownSeconds);
-       const totalSeconds = Math.max(1, (minutes * 60) + seconds);
+     if (modalState.status && STATUS_OPTIONS[modalState.status]) {
+       const { countType } = STATUS_OPTIONS[modalState.status];
        
-       submitData = {
-         patientName: modalState.patientName.trim(),
-         memo: modalState.memo.trim(),
-         status: modalState.status,
-         startTime: undefined,  // countdown일 때는 startTime 제거
-         endTime: currentTime + totalSeconds,
-         countdownMinutes: minutes.toString(),
-         countdownSeconds: seconds.toString()
-       };
-     } else {
-       submitData = {
-         patientName: modalState.patientName.trim(),
-         memo: modalState.memo.trim(),
-         status: modalState.status,
-         startTime: currentTime,
-         endTime: undefined,  // countup일 때는 endTime 제거
-         countdownMinutes: "",
-         countdownSeconds: "0"
-       };
+       let submitData;
+       
+       if (countType === "countdown") {
+         const minutes = safeParseInt(modalState.countdownMinutes);
+         const seconds = safeParseInt(modalState.countdownSeconds);
+         const totalSeconds = Math.max(1, (minutes * 60) + seconds);
+         
+         submitData = {
+           patientName: modalState.patientName.trim(),
+           memo: modalState.memo.trim(),
+           status: modalState.status,
+           startTime: undefined,  // countdown일 때는 startTime 제거
+           endTime: currentTime + totalSeconds,
+           countdownMinutes: minutes.toString(),
+           countdownSeconds: seconds.toString()
+         };
+       } else {
+         submitData = {
+           patientName: modalState.patientName.trim(),
+           memo: modalState.memo.trim(),
+           status: modalState.status,
+           startTime: currentTime,
+           endTime: undefined,  // countup일 때는 endTime 제거
+           countdownMinutes: "",
+           countdownSeconds: "0"
+         };
+       }
+       
+       onSubmit(submitData);
+       closeModal();
      }
-     
-     onSubmit(submitData);
-     closeModal();
    }
  };
 

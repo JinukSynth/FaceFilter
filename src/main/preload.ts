@@ -17,4 +17,6 @@ contextBridge.exposeInMainWorld("electron", {
     
   },
   minimizeAndRestore: () => ipcRenderer.send('minimize-and-restore'),
+  showConfirmDialog: () => ipcRenderer.invoke('show-confirm-dialog'),
+  showErrorDialog: (message: string) => ipcRenderer.invoke('show-error-dialog', message),
 });

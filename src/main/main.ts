@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 
 let mainWindow: BrowserWindow | null;
@@ -87,10 +87,34 @@ ipcMain.on("minimize-and-restore", () => {
     // 창 최소화
     mainWindow.minimize();
     
+    // 최소한의 지연 시간으로 복원 (16ms는 1프레임에 해당)
     setTimeout(() => {
       mainWindow?.restore();
-    }, 50);  // 50ms
+      // 복원 후 포커스 보장
+      mainWindow?.focus();
+    }, 16);
   }
+});
+
+ipcMain.handle('show-confirm-dialog', async () => {
+  const result = await dialog.showMessageBox(mainWindow!, {
+    type: 'question',
+    buttons: ['예', '아니오'],
+    title: '확인',
+    message: '이 셀을 초기화하시겠습니까?',
+    defaultId: 0,
+    cancelId: 1
+  });
+  return result === 0;  // response 속성 대신 직접 비교
+});
+
+ipcMain.handle('show-error-dialog', async (_event, message: string) => {
+  await dialog.showMessageBox(mainWindow!, {
+    type: 'error',
+    buttons: ['확인'],
+    title: '오류',
+    message: message
+  });
 });
 
 app.whenReady().then(() => {
