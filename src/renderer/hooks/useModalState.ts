@@ -71,19 +71,6 @@ export function useModalState({ cellData, onSubmit }: UseModalStateProps) {
    return null;
  };
 
-//  const openModal = () => {
-//   console.log("모달 열기 전 cellData:", cellData);
-//   setModalState({
-//     isOpen: true,
-//     patientName: cellData?.patientName || "",
-//     memo: cellData?.memo || "",
-//     status: cellData?.status || null,
-//     countdownMinutes: cellData?.countdownMinutes || "",
-//     countdownSeconds: cellData?.countdownSeconds || "0"
-//   });
-//   console.log("모달 열린 후 modalState:", modalState);
-// };
-
   // openModal 함수 수정
 const openModal = () => {
   const updateState = async () => {

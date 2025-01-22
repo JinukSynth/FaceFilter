@@ -23,20 +23,6 @@ export const useFirebaseCell = ({ row, col, initialData }: UseFirebaseCellProps)
  const [cellData, setCellData] = useState<CellData | null>(initialData || null);
  const path = `path/to/cell/${row}_${col}`;
 
-//  // Firebase 리스너 설정
-//  useEffect(() => {
-//    firebaseManager.startListener<CellData>(path, (data) => {
-//      if (data) {
-//        setCellData(data);
-//      } else {
-//        setCellData(null);
-//      }
-//    });
-
-//    return () => {
-//      firebaseManager.stopListener(path);
-//    };
-//  }, [path]);
 
 useEffect(() => {
   const setupListener = () => {
@@ -89,29 +75,6 @@ useEffect(() => {
    }
  };
 
-//  // Cell 초기화 함수
-//  const resetCell = async () => {
-//    try {
-//      await firebaseManager.deleteData(path);
-//      console.log("Data deleted from Firebase");
-     
-//      // 상태 초기화를 명시적으로 수행
-//      setCellData(null);
-     
-//      // Firebase 리스너 재설정
-//      firebaseManager.stopListener(path);
-//      firebaseManager.startListener<CellData>(path, (data) => {
-//        if (data) {
-//          setCellData(data);
-//        } else {
-//          setCellData(null);
-//        }
-//      });
-//    } catch (error) {
-//      console.error("Error deleting data from Firebase:", error);
-//      throw error;
-//    }
-//  };
 
   const resetCell = async () => {
     try {
