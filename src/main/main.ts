@@ -81,6 +81,18 @@ ipcMain.on("resize-window", (_event, isMinimized: boolean) => {
   }
 });
 
+// 창 최소화 후 복원을 위한 핸들러 추가
+ipcMain.on("minimize-and-restore", () => {
+  if (mainWindow) {
+    // 창 최소화
+    mainWindow.minimize();
+    
+    setTimeout(() => {
+      mainWindow?.restore();
+    }, 50);  // 50ms
+  }
+});
+
 app.whenReady().then(() => {
   createMainWindow();
 

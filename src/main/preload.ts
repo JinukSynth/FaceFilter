@@ -16,4 +16,5 @@ contextBridge.exposeInMainWorld("electron", {
     },
     
   },
+  minimizeAndRestore: () => ipcRenderer.send('minimize-and-restore'),
 });
